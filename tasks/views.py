@@ -2,40 +2,54 @@ from django.shortcuts import render , redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.contrib.auth import login
+from django.contrib.auth import login ,logout
 from django.db import IntegrityError
 
 def home(request):
     return render(request, 'home.html')
 
-
 def signup(request):
     if request.method == 'GET':
-        # Renderizamos el formulario vacío
+        # Pasamos un formulario vacío a la plantilla
         form = UserCreationForm()
         return render(request, 'signup.html', {'form': form})
     else:
-        # Reconstruimos el formulario con los datos enviados
-        form = UserCreationForm(request.POST)
-        if form.is_valid():  # Validamos el formulario
+        # Proceso de creación de usuario y verificación de contraseña
+        form = UserCreationForm(request.POST)  # Reconstruimos el formulario con los datos enviados
+        if request.POST['password1'] == request.POST['password2']:
             try:
-                # Creamos el usuario de manera manual (ya que queremos capturar IntegrityError)
                 user = User.objects.create_user(
-                    username=request.POST['username'],  # Obtenemos el nombre del usuario
-                    password=request.POST['password1']  # Obtenemos la contraseña
+                    username=request.POST['username'],
+                    password=request.POST['password1']
                 )
-                user.save()  # Intentamos guardar el usuario en la base de datos
-                login(request, user)  # Inicia sesión automáticamente
-                return redirect('tasks')  # Redirigimos a la vista "tasks"
+                user.save()
+                login(request,user)
+                return redirect('tasks')
+                # return HttpResponse('User created successfully')
             except IntegrityError:
-                # Mostramos un mensaje si el usuario ya existe
                 return render(request, 'signup.html', {
                     'form': form,
-                    'error': 'A user with that username already exists.'
+                    'error': 'User already exists'
                 })
         else:
-            # Si el formulario es inválido, mostramos los errores
-            return render(request, 'signup.html', {'form': form})
+            return render(request, 'signup.html', {
+                'form': form,
+                'error': 'Passwords do not match'
+            })
+            
+
 def tasks(request):
     return render(request, 'tasks.html')
  
+ 
+#do not call logout it nakes issues 
+def singout(request):
+    logout(request)
+    return redirect('home')
+# redirect(): Se utiliza cuando necesitas cambiar de página. Genera una respuesta de redirección (código de estado HTTP 302) al navegador, lo que hace que cargue una nueva URL.
+# path('logout/', views.singout, name='logout'),
+
+
+def signin(request):
+    return render(request, 'signin.html')
+#render(): Cuando quieras mostrar una plantilla con datos a la página actual (por ejemplo, al mostrar un formulario de inicio de sesión o una página de detalles de un objeto).

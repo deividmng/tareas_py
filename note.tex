@@ -188,3 +188,38 @@ i dentro tienes que poner
 
  {% extends 'base.html' %} para importar la plantilla base que es la nav por ahora 
 
+
+ ahora voy a crear el logout 
+   {% if user.is_authenticated %}
+   <li>
+   <a href="/logout">Logout</a>
+</li>
+{% endif %} en la base  de esta forma solo vere si esto sigup
+recuarda eliminar los cookis
+
+ {% if user.is_authenticated %}
+ <li>
+ <a href="/logout">Logout</a>
+</li>
+{% else %}
+<li>
+ <a href="/signup">signup</a>
+</li>
+{% endif %} de esta forma para mostar en el caso que  el user este registrado
+
+ahora creo el path para el logout
+
+from django.contrib.auth import login ,logout
+
+para lo de logout elimina la cookies
+
+
+ahora vamos a crear el signin def signin(request):
+return redirect('signin.html') 
+i crea el folder as well 
+
+def signin(request):
+    return render(request, 'signin.html')
+
+    recuerda usar render 
+
