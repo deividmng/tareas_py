@@ -1,0 +1,156 @@
+# primero para crear el modulo  py -m venv venv i crear la carpeta venv , es como npm x create--react " desde la terminal
+para arrancarlo  
+#para activar el entorno C:\Users\david\Desktop\django\venv\Scripts\Activate.ps1
+en el caso de que no funciona con lo del f1 tienes que hacerlo manual 
+# luego activamos django  pip install django dentro de la terminal para instal django
+#para ver si se i django-admin --version , para ver si fue existoso 
+# para crear la carpeta para el projecto django-admin startproject djandocrud . ==, el . es para que no haga la carpeta dentro de venv
+
+#python manage.py runserver  == run para empezar a usar el proyecto en el localhost 8000
+
+#para crear la base de datos sql . que se pueda ver en pantalla = python manage.py runserver lo hace en el localhost 8000
+es como npm start etc
+
+# para crear el overflow    python manage.py startapp tasks , para crear el entorno 
+# luego ve a la carpeta principal que seria djangocrud i en INSTALLED_APP pon INSTALLED_APPS  en settings = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'tasks'
+]
+
+#luego en task views crea un def para probar si todo va bien 
+# importa from django.http import HttpResponse para crear el enlace 
+def helloword(request):
+ return HttpResponse('hello david')
+
+ ahora en la carpta django deveria de estar la url urlpatterns = [
+    path('', views.helloword), == que sea con un texto vacio
+]
+ en las url importa from tasks import views  i llama a path('',views.helloword) urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',views.helloword)
+]
+
+ahora para arrancar el proyecto python manage.py runserver
+
+# crea una carpta en taks llamada templates para poner dentro el archibo html 
+ ahora que cree la carpeta template con en eachivo html 
+
+ cambia el formato para estraer views  
+ from django.shortcuts import render
+# from django.http import HttpResponse este lo elimino 
+def helloword(request):
+ return render(request, 'singup.html')
+
+
+ #ahora vamos a crear el formulario , pero vamos a usar una biblioteca que nos da py
+ from django.contrib.auth.forms  import UserCreationForm 
+  esto es para crear el formulario de crear un usuario 
+
+  def helloword(request):
+ return render(request, 'singup.html'), {
+    'form' : UserCreationForm()
+ } 
+
+ recuarda para mostarlo en pantalla vincularlo al singup {{form}}
+
+
+ {{form.as_p}} == con esa propiedad hace que sea uno a cada lado
+
+
+ ahora en el form creo una dirrection 
+ <form action="/signup/" method="POST">
+    {{form.as_p}}
+    <button >
+        SigUp 
+    </button>
+</form> LO DE ACTION ES PARA QUE ENVIE LOS DATOS I LO DE POST EN PARA QUE NO SE VEA LO QUE ENVIE 
+
+path('signup/', views.helloword), crea un nuevo pach 
+
+en el formulario anade 
+{% csrf_token %}
+para la seguridad de los token 
+<form action="/signup/" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button >
+        SigUp 
+    </button>
+</form>
+
+
+ahora vamos a crear el signup en el html i crea el paht 
+path('signup/', views.signup, name='signup'),
+i la funcion 
+def signup(request):
+    return render(request,'signup.html', {
+        'form': UserCreationForm
+    })
+ahora lo que quiero es el la funcion signup es ver si se esta enviado 
+def signup(request):
+    if request.method == 'GET':
+        print('sending formulario')
+    else:
+        print('gettind data')
+    return render(request,'signup.html', {
+        'form': UserCreationForm
+    })
+
+ahora voy a crealo de forma cottecta PARA GUARDALOS
+
+
+def signup(request):
+    if request.method == 'GET':
+        return render(request, 'signup.html')
+    else:
+        if request.POST['password1'] == request.POST['password2']:
+            try:
+                # Crear el usuario
+                user = User.objects.create_user(
+                    username=request.POST['username'],
+                    password=request.POST['password1']
+                )
+                user.save()  # Guardar el usuario en la base de datos
+                return HttpResponse('User created successfully')
+            except:
+                return HttpResponse('User already exists')
+        return HttpResponse('Passwords do not match')
+
+python manage.py migrate para   = para las migracion me va a crear las tablas 
+
+
+
+def signup(request):
+    if request.method == 'GET':
+        # Pasamos un formulario vacío a la plantilla
+        form = UserCreationForm()
+        return render(request, 'signup.html', {'form': form})
+    else:
+        # Proceso de creación de usuario y verificación de contraseña
+        form = UserCreationForm(request.POST)  # Reconstruimos el formulario con los datos enviados
+        if request.POST['password1'] == request.POST['password2']:
+            try:
+                user = User.objects.create_user(
+                    username=request.POST['username'],
+                    password=request.POST['password1']
+                )
+                user.save()
+                return HttpResponse('User created successfully')
+            except:
+                return render(request, 'signup.html', {
+                    'form': form,
+                    'error': 'User already exists'
+                })
+        else:
+            return render(request, 'signup.html', {
+                'form': form,
+                'error': 'Passwords do not match'
+            })
+ de esta forma es de la fomar para crear el formulario
+
+ #ahora voy a crear las tareas

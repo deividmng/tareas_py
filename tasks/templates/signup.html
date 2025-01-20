@@ -1,0 +1,13 @@
+<h1>viene desde templates</h1>
+
+
+<h1>Signup Form</h1>
+<!-- para ver el erro -->
+{% if error %} 
+
+{% endif %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign Up</button>
+</form>
