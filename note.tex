@@ -154,3 +154,37 @@ def signup(request):
  de esta forma es de la fomar para crear el formulario
 
  #ahora voy a crear las tareas
+
+ crea la funcion en views 
+ def tasks(request):
+    return render(request, 'tasks.html')
+
+    path('tasks/', views.tasks, name='tasks') i ahora crea el path
+
+    from django.shortcuts import render , redirect para que me lleve al path taks cuando se creo el usuario
+
+    return redirect('tasks')
+
+    ahora no se vera en las cookis importamos otra biblioteca 
+    from django.contrib.auth import login
+
+    tiene dos parametrod login(request,user)
+
+    mira si se creo la cooquie en aplication cookies
+
+    ahora vamos a depurar los errores con 
+#from django.db import IntegrityError
+
+ahora voy a crear el template base 
+i dentro tienes que poner 
+
+    {% block content %}
+    {% endblock %}
+
+    en home add {% extends 'base.html' %}
+ para estraer 
+
+ ahora en base voy a crear una  voy a crear la nav para que me dirija a taks or singup
+
+ {% extends 'base.html' %} para importar la plantilla base que es la nav por ahora 
+
