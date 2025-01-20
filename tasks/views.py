@@ -1,5 +1,5 @@
 from django.shortcuts import render , redirect
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm ,AuthenticationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.contrib.auth import login ,logout
@@ -51,5 +51,13 @@ def singout(request):
 
 
 def signin(request):
-    return render(request, 'signin.html')
+    if request.method == 'GET':
+        return render(request, 'signin.html', {
+        'form' : AuthenticationForm
+    })
+    else:
+        print(request.POST)
+        return render(request, 'signin.html', {
+        'form' : AuthenticationForm
+    })
 #render(): Cuando quieras mostrar una plantilla con datos a la página actual (por ejemplo, al mostrar un formulario de inicio de sesión o una página de detalles de un objeto).
