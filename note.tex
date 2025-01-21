@@ -230,3 +230,108 @@ def signin(request):
 i crea el folder signin tambien crea el if else 
 
 luego en views vamos a crear el AuthenticationForm
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Signin</h1>
+
+<form action="/signin/" method="POST">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <button>
+        Signin
+    </button>
+</form>
+{% endblock %}
+# esta es la function 
+def signin(request):
+    if request.method == 'GET':
+        return render(request, 'signin.html', {
+        'form' : AuthenticationForm
+    })
+    else:
+        print(request.POST)
+        return render(request, 'signin.html', {
+        'form' : AuthenticationForm
+    })
+ahora voy a usar el authenticated
+from django.contrib.auth import login ,logout, authenticate
+
+
+el def de signin 
+def signin(request):
+    if request.method == 'GET':
+        return render(request, 'signin.html', {
+            'form': AuthenticationForm
+        })
+    else:
+        user = authenticate(
+            request, 
+            username=request.POST['username'], 
+            password=request.POST['password']
+        )
+        if user is None:
+            return render(request, 'signin.html', {
+                'form': AuthenticationForm,
+                'error': 'Username or password is incorrect'
+            })
+        else:
+            login(request, user)
+            return redirect('tasks')
+
+en el signin.html pon {{error}} para ver el erro
+
+ahora vamos a crear el crud django
+en models.py  creamos la clase 
+
+
+# AHORA VOY A CREAR LA TABLA 
+from django.db import models
+from django.contrib.auth.models import User
+
+# Create your models here.
+class Task(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True)  # Cambiado a TextField
+    created = models.DateTimeField(auto_now_add=True)  # Cambiado a DateTimeField
+    date_completed = models.DateTimeField(null=True, blank=True)  # Nombre corregido y mejorado
+    important = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    python manage.py makemigrations
+  va a crear la carpeta migrations 
+  para arrancarla python manage.py migrate
+  python manage.py shell 
+
+  ahora voy a crear el super usuario para poder modificar todo
+  python manage.py createsuperuser
+
+  Username: superuser
+  password rootroot
+
+  pero aun el superuser no puede anadir nada solo eliminar 
+  from django.db import models
+  from django.contrib.auth.models import User
+
+
+   ahora en el admin.py 
+   from django.contrib import admin
+from .models import Task
+# .models es la tabla
+# Register your models here.
+admin.site.register(Task)
+
+      # Create your models here.
+  class Task(models.Model):
+      title = models.CharField(max_length=100)
+      description = models.TextField(blank=True)  
+      created = models.DateTimeField(auto_now_add=True)  
+      datecompleted = models.DateTimeField(null=True, blank=True)  
+      important = models.BooleanField(default=False)
+      user = models.ForeignKey(User, on_delete=models.CASCADE)
+      
+      def __str__(self):
+          return self.title
+ para ver  
