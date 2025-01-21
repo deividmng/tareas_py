@@ -1,9 +1,11 @@
-from django.shortcuts import render , redirect
+from django.shortcuts import render , redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm ,AuthenticationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.contrib.auth import login ,logout, authenticate
 from django.db import IntegrityError
+from .forms import TaskForm
+from .models import Task
 
 def home(request):
     return render(request, 'home.html')
@@ -39,9 +41,49 @@ def signup(request):
             
 
 def tasks(request):
-    return render(request, 'tasks.html')
- 
- 
+    tasks = Task.objects.filter(user=request.user, datecompleted__isnull=True)
+    return render(request, 'tasks.html', {'tasks': tasks})
+
+
+def create_task(request):
+    if request.method == "GET":
+        return render(request, 'create_task.html', {
+            'form': TaskForm
+        }) 
+    else:
+        try:
+            form = TaskForm(request.POST)  # Para obtener el formulario
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html', {
+                'form': TaskForm,
+                'erro': 'Please provide valid data'  # Corregido: coma añadida
+            })
+
+from django.shortcuts import get_object_or_404
+
+def task_detail(request, task_id):
+    if request.method == 'GET':
+        print(task_id)  # Esto mostrará el ID de la tarea en la consola para depuración
+        task = get_object_or_404(Task, pk=task_id, user=request.use)  # Corregido el método
+        form = TaskForm(instance=task)
+        return render(request, 'task_detail.html', {'task': task, 'form': form})
+    else:
+        try:
+            task = get_object_or_404(Task, pk=task_id, user=request.use)
+            form = TaskForm(request.POST, instance=task)
+            form.save()  # Guarda el formulario
+            return redirect('tasks')  # Redirige a la lista de tareas
+        except ValueError:
+            return render(request, 'task_detail.html', {
+                'task': task,
+                'form': form,
+                'error': 'Error updating task'
+            })
+    
 #do not call logout it nakes issues 
 def singout(request):
     logout(request)
