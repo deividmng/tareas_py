@@ -337,4 +337,146 @@ admin.site.register(Task)
  para ver
  
 
- time 1:19
+ AHORA VAMOS A CREAR LA TASK 
+    crea el folder create_taks i el path  i crea el form.py 
+    from django.forms import ModelForm  # Corrección aquí
+    from .models import Task  # Importa el modelo correspondiente
+    
+    class TaskForm(ModelForm):
+        class Meta:
+            model = Task
+            fields = ['title','description','important']  # O lista de campos específicos si no quieres incluir todos
+ para poder crear el formulario
+ 
+ 
+ def create_task(request):
+    
+    if request.method == "GET":
+         return render(request, 'create_task.html', {
+         'form': TaskForm
+        }) 
+    else:
+        print(request.POST)
+        return render(request, 'create_task.html', {
+         'form': TaskForm
+          }) 
+ {% extends 'base.html' %}
+
+
+{% block content %} 
+<h1>create task</h1>
+<form action="/tasks/create/" method="POST">
+    {% csrf_token %}
+    {{form}}
+    <button>
+        Save
+    </button>
+</form>
+{% endblock %}
+
+ahora estoy creadon el form para subir una tarea
+
+{% extends 'base.html' %}
+
+
+{% block content %} 
+<h1>create task</h1>
+    {{error}}
+<form action="/tasks/create/" method="POST">
+    {% csrf_token %}
+    {{form}}
+    <button>
+        Save
+    </button>
+</form>
+{% endblock %}
+
+
+def create_task(request):
+    if request.method == "GET":
+        return render(request, 'create_task.html', {
+            'form': TaskForm
+        }) 
+    else:
+        try:
+            form = TaskForm(request.POST)  # Para obtener el formulario
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            return redirect('tasks')
+        except ValueError:
+            return render(request, 'create_task.html', {
+                'form': TaskForm,
+                'erro': 'Please provide valid data'  # Corregido: coma añadida
+            })
+
+       {% extends 'base.html' %}
+
+{% block content %}
+<h1>Tareas</h1>
+<ul>
+    {% for task in tasks %}
+    <li>
+        {% if task.important%}
+        <strong>{{ task.title }}</strong>
+        {% else %}
+        {{ task.title }}
+        {% endif%}
+        <p>{{ task.description }}</p>
+        <p>{{ task.user.username }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %} para que  se resalte 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dj crud</title>
+</head>
+<body>
+<nav>
+    <ul class="none">
+        <li>
+            <a href="">home</a>
+        </li>
+       
+        {% if user.is_authenticated %}
+        <li>
+            <a href="/tasks/">Tasks</a>
+        </li>
+        <li>
+            <a href="/tasks/create"> Create Tasks</a>
+        </li>
+        {% endif %}
+      
+       
+        {% if user.is_authenticated %}
+        <li>
+            <a href="/logout">Logout</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="/signup">signup</a>
+        </li>
+        <li>
+            <a href="/signin">signIn</a>
+        </li>
+        {% endif %}
+       
+    </ul>
+
+    
+    
+</nav>
+
+    {% block content %}
+    {% endblock %}
+    
+</body>
+</html>
+
+ahora voy a hacer para crear un formulario para crear la tarea
+ 
