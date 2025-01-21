@@ -1,22 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Tasks Pending</h1>
-<ul>
-    {% for task in tasks %}
-    <li>
-        <a href="{% url 'task_detail' task.id %}">
-        {% if task.important%}
-        <strong>{{ task.title }}</strong>
-        {% else %}
-        {{ task.title }}
-        {% endif%}
-        <p>{{ task.description }}</p>
-        <p>{{ task.user.username }}</p>
-        <p>{{ task.datecompleted|date:"M j, H:i" }}</p>
-       </a>
-    </li>
-    {% endfor %}
-</ul>
+<main class="container mt-5">
+    <h1 class="text-center mb-4">Tasks Pending</h1>
+    <ul class="list-group">
+        {% for task in tasks %}
+        <li class="list-group-item mb-4 text-center">
+            <div class="ms-2 me-auto">
+                <a href="{% url 'task_detail' task.id %}" class="text-decoration-none text-dark">
+                    {% if task.important %}
+                    <h6 class="fw-bold text-danger mb-1">{{ task.title }}</h6>
+                    {% else %}
+                    <h6 class="fw-normal mb-1">{{ task.title }}</h6>
+                    {% endif %}
+                
+                <p class="mb-1 text-muted small">{{ task.description }}</p>
+                <p class="mb-0 text-muted"><small>Assigned by: {{ task.user.username }}</small></p>
+            </div>
+            <span class="badge bg-primary rounded-pill small">{{ task.datecompleted|date:"M j, H:i" }}</span>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-center">
+            <p class="text-muted">No tasks pending at the moment.</p>
+        </li>
+        {% endfor %}
+    </ul>
+</a>
+</main>
 {% endblock %}
- 
