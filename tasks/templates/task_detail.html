@@ -1,32 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<main class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h1 class="text-center">{{ task.title }}</h1>
 
-{{task.title}}
+      {% if error %}
+        <div class="alert alert-danger">
+          {{ error }}
+        </div>
+      {% endif %}
 
-{{error}}
+      <form method="POST" class="card card-body shadow-sm p-4 mb-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Update</button>
+      </form>
 
-<form method="POST">
-  {% csrf_token %}
-  {{form.as_p}}
+      <form action="{% url 'complete_task' task.id %}" method="POST" class="card card-body shadow-sm p-4 mb-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success w-100">Complete</button>
+      </form>
 
-  <button>
-    Update
-  </button>
-</form>
-
-<form action="{% url 'complete_task' task.id %}" method="POST">
-  {% csrf_token %}
-  <button>
-    complete
-  </button>
-</form>
-
-<form action="{% url 'delete_task' task.id %}" method="POST">
-  {% csrf_token %}
-  <button>
-    delete
-  </button>
-</form>
-
+      <form action="{% url 'delete_task' task.id %}" method="POST" class="card card-body shadow-sm p-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger w-100">Delete</button>
+      </form>
+    </div>
+  </div>
+</main>
 {% endblock %}
