@@ -482,4 +482,9 @@ ahora voy a hacer para crear un formulario para crear la tarea
 
 
 #ahora voy a crear el delete EN TAKS-DESTAIL
- 
+path('tasks/<int:task_id>/delete', views.delete_task, name='delete_task'),
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.delete()
+        return redirect('tasks') 
