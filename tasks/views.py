@@ -6,6 +6,7 @@ from django.contrib.auth import login ,logout, authenticate
 from django.db import IntegrityError
 from .forms import TaskForm
 from .models import Task
+from django.utils import timezone
 
 def home(request):
     return render(request, 'home.html')
@@ -67,23 +68,31 @@ from django.shortcuts import get_object_or_404
 
 def task_detail(request, task_id):
     if request.method == 'GET':
-        print(task_id)  # Esto mostrará el ID de la tarea en la consola para depuración
-        task = get_object_or_404(Task, pk=task_id, user=request.use)  # Corregido el método
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
         form = TaskForm(instance=task)
         return render(request, 'task_detail.html', {'task': task, 'form': form})
     else:
         try:
-            task = get_object_or_404(Task, pk=task_id, user=request.use)
+            task = get_object_or_404(Task, pk=task_id, user=request.user)
             form = TaskForm(request.POST, instance=task)
-            form.save()  # Guarda el formulario
-            return redirect('tasks')  # Redirige a la lista de tareas
+            form.save()
+            return redirect('tasks')
         except ValueError:
-            return render(request, 'task_detail.html', {
-                'task': task,
-                'form': form,
-                'error': 'Error updating task'
-            })
+            return render(request, 'task_detail.html', {'task': task, 'form': form, 'error': 'Error updating task.'})
+
+def complete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.datecompleted = timezone.now()
+        task.save()
+        return redirect('tasks') 
     
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.delete()
+        return redirect('tasks') 
+
 #do not call logout it nakes issues 
 def singout(request):
     logout(request)
